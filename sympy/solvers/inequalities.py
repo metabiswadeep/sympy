@@ -939,6 +939,7 @@ def reduce_inequalities(inequalities, symbols=[]):
     >>> reduce_inequalities(0 <= x + y*2 - 1, [x])
     (x < oo) & (x >= 1 - 2*y)
     """
+    print(inequalities)
     if not iterable(inequalities):
         inequalities = [inequalities]
     inequalities = [sympify(i) for i in inequalities]
@@ -961,14 +962,21 @@ def reduce_inequalities(inequalities, symbols=[]):
 
     # prefilter
     keep = []
+    print(inequalities)
     for i in inequalities:
         if isinstance(i, Relational):
             i = i.func(i.lhs.as_expr() - i.rhs.as_expr(), 0)
+            print(i)
+        elif i.has(And, Or, Not):
+            raise NotImplementedError(
+                "reduce_inequalities only supports inequalities, not booleans")
         elif i not in (True, False):
             i = Eq(i, 0)
+            print(i)
         if i == True:
             continue
         elif i == False:
+            print(i)
             return S.false
         if i.lhs.is_number:
             raise NotImplementedError(
